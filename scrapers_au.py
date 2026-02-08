@@ -14,6 +14,7 @@ import asyncio
 import json
 import os
 import re
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from urllib.parse import quote_plus, urljoin
@@ -163,6 +164,8 @@ async def _get_seek_page_async(url: str) -> str:
             kwargs = {"headless": False}
             if browser_path:
                 kwargs["browser_executable_path"] = browser_path
+                # Docker runs as root — Chrome needs --no-sandbox
+                kwargs["browser_args"] = ["--no-sandbox", "--disable-dev-shm-usage"]
             _seek_browser = await uc.start(**kwargs)
         except Exception as e:
             print(f"      Seek: Chrome not available ({e}), skipping")
@@ -180,18 +183,25 @@ async def _get_seek_page_async(url: str) -> str:
     return ""
 
 
+_seek_thread_local = threading.local()
+
+
 def _get_seek_page(url: str) -> str:
-    """Sync wrapper for async nodriver Seek page fetch."""
-    try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            # Already in async context (worker) — use nest_asyncio or thread
-            import concurrent.futures
-            with concurrent.futures.ThreadPoolExecutor() as pool:
-                return pool.submit(lambda: asyncio.run(_get_seek_page_async(url))).result(timeout=30)
-        return loop.run_until_complete(_get_seek_page_async(url))
-    except RuntimeError:
-        return asyncio.run(_get_seek_page_async(url))
+    """Sync wrapper for async nodriver Seek page fetch.
+
+    Uses a thread-local event loop that persists across calls so the
+    global _seek_browser stays bound to a live loop (asyncio.run()
+    would create+close a new loop each time, orphaning the browser).
+    """
+    global _seek_browser
+
+    loop = getattr(_seek_thread_local, "loop", None)
+    if loop is None or loop.is_closed():
+        loop = asyncio.new_event_loop()
+        _seek_thread_local.loop = loop
+        _seek_browser = None  # reset browser when loop changes
+
+    return loop.run_until_complete(_get_seek_page_async(url))
 
 
 def scrape_seek(search_term: str, city: str, max_pages: int = 5) -> list[dict]:

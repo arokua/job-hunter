@@ -12,6 +12,7 @@ RUN apt-get update && \
         gcc libffi-dev \
         chromium chromium-driver \
         xvfb \
+        fonts-liberation \
     && rm -rf /var/lib/apt/lists/*
 
 # Set Chrome path for nodriver (Debian uses "chromium" not "google-chrome")
