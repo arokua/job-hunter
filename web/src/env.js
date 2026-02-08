@@ -13,6 +13,7 @@ export const env = createEnv({
     GMAIL_USER: z.string().email().optional(),
     GMAIL_APP_PASSWORD: z.string().min(1).optional(),
     EMAIL_TO: z.string().optional(),
+    CRON_SECRET: z.string().min(1).optional(),
   },
 
   client: {},
@@ -26,6 +27,7 @@ export const env = createEnv({
     GMAIL_USER: process.env.GMAIL_USER,
     GMAIL_APP_PASSWORD: process.env.GMAIL_APP_PASSWORD,
     EMAIL_TO: process.env.EMAIL_TO,
+    CRON_SECRET: process.env.CRON_SECRET,
   },
 
   skipValidation: !!process.env.SKIP_ENV_VALIDATION,
