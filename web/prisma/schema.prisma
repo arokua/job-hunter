@@ -1,0 +1,77 @@
+generator client {
+    provider = "prisma-client-js"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+enum SubmissionStatus {
+    PENDING
+    PARSING
+    AWAITING_REVIEW
+    SCRAPING
+    SCORING
+    SENDING
+    COMPLETE
+    FAILED
+}
+
+model Submission {
+    id        String           @id @default(cuid())
+    email     String
+    status    SubmissionStatus @default(PENDING)
+    error     String?
+    preferences Json?          // { locations: string[], roles: string[] }
+    scoringWeights Json?       // { companyTier, location, titleMatch, skills, sponsorship, recency } — all floats, default 1.0
+    createdAt DateTime         @default(now())
+    updatedAt DateTime         @updatedAt
+
+    resumeProfile ResumeProfile?
+    jobResults    JobResult[]
+
+    @@index([email, createdAt])
+}
+
+model ResumeProfile {
+    id           String   @id @default(cuid())
+    submissionId String   @unique
+    submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+    rawText      String   @db.Text
+    skills       Json     // [{ name: string, tier: "core" | "strong" | "peripheral" }]
+    customSkills Json?    // User-modified skills after review
+    titles       Json     // string[]
+    keywords     Json     // string[]
+    experience   Json?    // { years: number, level: string }
+    aiResponse   String?  @db.Text
+
+    createdAt    DateTime @default(now())
+}
+
+model JobResult {
+    id           String   @id @default(cuid())
+    submissionId String
+    submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+    title        String
+    company      String
+    location     String
+    jobUrl       String
+    site         String
+    score        Float
+    tier         String?  // "Big Tech", "AU Notable", "Top Tech"
+    seniority    String?
+    datePosted   String?
+    description  String?  @db.Text
+    salary       String?
+    workType     String?
+    workArrangement String?
+    isRemote     Boolean  @default(false)
+
+    createdAt    DateTime @default(now())
+
+    @@index([submissionId, score(sort: Desc)])
+}

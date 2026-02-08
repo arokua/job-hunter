@@ -213,8 +213,22 @@ SPONSORSHIP_SIGNALS = [
 
 # ─── Job Scoring ─────────────────────────────────────────────────────────────
 
-def score_job(row: pd.Series, profile: dict) -> float:
-    """Score a job by relevance to the parsed resume profile."""
+def score_job(row: pd.Series, profile: dict, weights: dict = None) -> float:
+    """Score a job by relevance to the parsed resume profile.
+
+    Args:
+        weights: Optional dict with multipliers for scoring categories.
+            Keys: companyTier, location, titleMatch, skills, sponsorship, recency
+            Values: 0.0 to 2.0 (default 1.0 for all)
+    """
+    w = weights or {}
+    w_company = w.get("companyTier", 1.0)
+    w_location = w.get("location", 1.0)
+    w_title = w.get("titleMatch", 1.0)
+    w_skills = w.get("skills", 1.0)
+    w_sponsorship = w.get("sponsorship", 1.0)
+    w_recency = w.get("recency", 1.0)
+
     score = 0.0
     title = str(row.get("title", "")).lower()
     company = str(row.get("company", "")).lower()
@@ -237,17 +251,19 @@ def score_job(row: pd.Series, profile: dict) -> float:
             if c.lower() in company:
                 tier_score = 8
                 break
-    score += tier_score
+    score += tier_score * w_company
 
     # ── Location scoring ──
+    location_score = 0
     if "adelaide" in location:
-        score += 15
+        location_score += 15
     elif "sydney" in location:
-        score += 12
+        location_score += 12
     elif "melbourne" in location:
-        score += 12
+        location_score += 12
     if "remote" in location:
-        score += 5
+        location_score += 5
+    score += location_score * w_location
 
     # ── Title scoring (BUG FIX 1: take max single match, not sum) ──
     title_boosts = {
@@ -285,7 +301,7 @@ def score_job(row: pd.Series, profile: dict) -> float:
     for term, boost in title_boosts.items():
         if term in title:
             best_title_boost = max(best_title_boost, boost)
-    score += best_title_boost
+    score += best_title_boost * w_title
 
     # ── FIX 6: Negative title penalty (non-engineering roles) ──
     if any(pat in title for pat in NEGATIVE_TITLE_PATTERNS):
@@ -300,7 +316,7 @@ def score_job(row: pd.Series, profile: dict) -> float:
             tier_pts = SKILL_TIERS.get(skill_lower, 1)
             skill_score += tier_pts
             matched_skill_terms.add(skill_lower)
-    score += min(skill_score, 30)  # Cap at 30
+    score += min(skill_score, 30) * w_skills
 
     # ── Keyword match scoring (BUG FIX 2: word-boundary + BUG FIX 3: dedup) ──
     keyword_score = 0.0
@@ -309,7 +325,7 @@ def score_job(row: pd.Series, profile: dict) -> float:
             continue  # Already counted in skill scoring
         if re.search(r'\b' + re.escape(kw) + r'\b', description):
             keyword_score += 2
-    score += min(keyword_score, 15)  # Cap at 15 (was 20)
+    score += min(keyword_score, 15) * w_skills
 
     # ── Seniority scoring (FIX 7: lead -10 → -5) ──
     seniority = str(row.get("seniority", "")) or detect_seniority(str(row.get("title", "")))
@@ -326,7 +342,7 @@ def score_job(row: pd.Series, profile: dict) -> float:
     for signal in SPONSORSHIP_SIGNALS:
         if signal in description:
             sponsorship_score += 4
-    score += min(sponsorship_score, 12)
+    score += min(sponsorship_score, 12) * w_sponsorship
 
     # ── AI-adjacent vs pure ML/research penalty ──
     pure_research_titles = [
@@ -344,7 +360,7 @@ def score_job(row: pd.Series, profile: dict) -> float:
     # ── Recency boost (newer = fewer applicants = better chance) ──
     date_str = str(row.get("date_posted", ""))
     recency_boost = _recency_score(date_str)
-    score += recency_boost
+    score += recency_boost * w_recency
 
     return score
 

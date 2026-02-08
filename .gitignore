@@ -17,3 +17,19 @@ jobs/email_preview.html
 # Personal config
 config/search.json
 .env
+
+# Planning docs (local only)
+.planning/
+
+# Web app
+web/node_modules/
+web/.next/
+web/.env
+web/.env*.local
+web/generated/
+
+# Playwright MCP
+.playwright-mcp/
+
+# Screenshots (dev only)
+*.png
