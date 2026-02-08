@@ -49,6 +49,7 @@ jobs:
               --no-senior
         env:
           PYTHONUNBUFFERED: "1"
+          CHROME_BINARY: /usr/bin/google-chrome-stable
 
       - name: Run scraper (full matrix)
         if: ${{ github.event.inputs.full_run == 'true' }}
@@ -57,6 +58,7 @@ jobs:
             uv run python scrape.py --hours 48
         env:
           PYTHONUNBUFFERED: "1"
+          CHROME_BINARY: /usr/bin/google-chrome-stable
 
       - name: Send email digest
         run: |

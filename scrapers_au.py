@@ -407,6 +407,8 @@ _GC_JUNK_PATTERNS = re.compile(
     r"discover ey|tap into tax|psychometric|futurefocus|"
     r"networking event|bootcamp|insight programme|virtual experience|open day)\b"
     r"|^event\s*[-–]"
+    r"|^Notify Me\b"
+    r"|^Expression of Interest\b"
 )
 
 
