@@ -6,7 +6,7 @@ Automated job discovery for Australia. Upload your resume, AI parses your skills
 
 ## Demo
 
-<video src="demo.mp4" width="100%" autoplay loop muted playsinline></video>
+![Demo](demo.gif)
 
 ## Screenshots
 
