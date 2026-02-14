@@ -20,5 +20,5 @@ dependencies = [
 ]
 
 [project.urls]
-Repository = "https://github.com/elvistran/job-hunter-au"
-Issues = "https://github.com/elvistran/job-hunter-au/issues"
+Repository = "https://github.com/elvistranhere/job-hunter"
+Issues = "https://github.com/elvistranhere/job-hunter/issues"

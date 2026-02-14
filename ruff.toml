@@ -3,3 +3,6 @@ target-version = "py312"
 
 [lint]
 select = ["E", "F", "I", "W"]
+
+[lint.per-file-ignores]
+"email_digest.py" = ["E501"]  # inline HTML templates exceed 120 chars

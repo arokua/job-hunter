@@ -23,7 +23,10 @@ import requests
 from bs4 import BeautifulSoup
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+    "User-Agent": (
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+    ),
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "en-AU,en;q=0.9",
 }
@@ -53,8 +56,8 @@ GRADCONNECTION_LOCATIONS = {
 }
 
 
-
 # ─── Seek ────────────────────────────────────────────────────────────────────
+
 
 def _extract_seek_redux_data(html: str) -> dict | None:
     """Extract the SEEK_REDUX_DATA JSON blob from page HTML using balanced brace matching."""
@@ -96,10 +99,7 @@ def _parse_seek_jobs(html: str) -> list[dict]:
         if not job_id or not title:
             continue
 
-        company = (
-            job.get("companyName", "")
-            or job.get("advertiser", {}).get("description", "")
-        )
+        company = job.get("companyName", "") or job.get("advertiser", {}).get("description", "")
         locations = job.get("locations", [])
         location = locations[0].get("label", "") if locations else ""
 
@@ -122,23 +122,29 @@ def _parse_seek_jobs(html: str) -> list[dict]:
         if isinstance(work_arrangements, dict):
             work_arrangement = work_arrangements.get("label", "")
         elif isinstance(work_arrangements, list) and work_arrangements:
-            work_arrangement = work_arrangements[0].get("label", "") if isinstance(work_arrangements[0], dict) else str(work_arrangements[0])
+            work_arrangement = (
+                work_arrangements[0].get("label", "")
+                if isinstance(work_arrangements[0], dict)
+                else str(work_arrangements[0])
+            )
         else:
             work_arrangement = ""
 
-        results.append({
-            "title": title,
-            "company": company,
-            "location": location,
-            "job_url": f"https://www.seek.com.au/job/{job_id}",
-            "date_posted": date_posted,
-            "description": teaser,
-            "salary": salary,
-            "work_type": work_type,
-            "work_arrangement": work_arrangement,
-            "site": "seek",
-            "_id": job_id,
-        })
+        results.append(
+            {
+                "title": title,
+                "company": company,
+                "location": location,
+                "job_url": f"https://www.seek.com.au/job/{job_id}",
+                "date_posted": date_posted,
+                "description": teaser,
+                "salary": salary,
+                "work_type": work_type,
+                "work_arrangement": work_arrangement,
+                "site": "seek",
+                "_id": job_id,
+            }
+        )
 
     return results
 
@@ -278,12 +284,14 @@ def scrape_prosple(search_term: str, city: str, max_results: int = 100) -> list[
     keywords = search_term
 
     session = requests.Session()
-    session.headers.update({
-        "User-Agent": HEADERS["User-Agent"],
-        "Content-Type": "application/json",
-        "Origin": "https://au.prosple.com",
-        "Referer": "https://au.prosple.com/graduate-jobs",
-    })
+    session.headers.update(
+        {
+            "User-Agent": HEADERS["User-Agent"],
+            "Content-Type": "application/json",
+            "Origin": "https://au.prosple.com",
+            "Referer": "https://au.prosple.com/graduate-jobs",
+        }
+    )
 
     results = []
     seen = set()
@@ -312,11 +320,7 @@ def scrape_prosple(search_term: str, city: str, max_results: int = 100) -> list[
             if "errors" in data:
                 break
 
-            opps = (
-                data.get("data", {})
-                .get("opportunitiesSearch", {})
-                .get("opportunities", [])
-            )
+            opps = data.get("data", {}).get("opportunitiesSearch", {}).get("opportunities", [])
             if not opps:
                 break
 
@@ -366,15 +370,17 @@ def scrape_prosple(search_term: str, city: str, max_results: int = 100) -> list[
                     desc_parts.append(f"Work rights: {', '.join(rights)}.")
                 description = " ".join(desc_parts)
 
-                results.append({
-                    "title": title,
-                    "company": company,
-                    "location": location,
-                    "job_url": job_url,
-                    "date_posted": close_desc,
-                    "description": description,
-                    "site": "prosple",
-                })
+                results.append(
+                    {
+                        "title": title,
+                        "company": company,
+                        "location": location,
+                        "job_url": job_url,
+                        "date_posted": close_desc,
+                        "description": description,
+                        "site": "prosple",
+                    }
+                )
 
             if len(opps) < page_size:
                 break
@@ -527,6 +533,7 @@ def _parse_gradconnection_card(container) -> dict | None:
 
 # ─── Unified runner ──────────────────────────────────────────────────────────
 
+
 def scrape_au_sites(search_term: str, city: str) -> list[dict]:
     """Scrape Seek + LinkedIn for a search term + city.
 
@@ -537,12 +544,12 @@ def scrape_au_sites(search_term: str, city: str) -> list[dict]:
     """
     all_results = []
 
-    print(f"      Seek...", end="", flush=True)
+    print("      Seek...", end="", flush=True)
     seek = scrape_seek(search_term, city)
     print(f" {len(seek)}", end="", flush=True)
     all_results.extend(seek)
 
-    print(f"  LinkedIn...", end="", flush=True)
+    print("  LinkedIn...", end="", flush=True)
     linkedin = scrape_linkedin(search_term, city)
     print(f" {len(linkedin)}")
     all_results.extend(linkedin)
@@ -626,10 +633,7 @@ def scrape_linkedin(search_term: str, city: str, max_results: int = 100) -> list
     jobs_with_urls = [(i, job) for i, job in enumerate(results) if job.get("job_url")]
     if jobs_with_urls:
         with ThreadPoolExecutor(max_workers=3) as pool:
-            futures = {
-                pool.submit(_fetch_linkedin_description, job["job_url"]): i
-                for i, job in jobs_with_urls
-            }
+            futures = {pool.submit(_fetch_linkedin_description, job["job_url"]): i for i, job in jobs_with_urls}
             for future in as_completed(futures):
                 idx = futures[future]
                 results[idx]["description"] = future.result()

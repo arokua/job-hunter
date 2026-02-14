@@ -19,8 +19,8 @@ from pathlib import Path
 
 import pandas as pd
 
-
 # ── Minimal .env loader (avoids python-dotenv dependency) ────────────────────
+
 
 def _load_dotenv(path: str = ".env"):
     env_path = Path(path)
@@ -116,6 +116,7 @@ SENIORITY_COLORS_DARK = {
 
 # ── HTML rendering ───────────────────────────────────────────────────────────
 
+
 def _esc(text) -> str:
     return html.escape(str(text)) if pd.notna(text) else ""
 
@@ -174,12 +175,18 @@ def _render_job_card(row: pd.Series) -> str:
         via_html = f'<span style="color:{L_TEXT_FAINT};font-size:11px;">{site}</span>'
 
     salary = _esc(row.get("salary", ""))
-    salary_html = f'<div style="color:{EMERALD_500};font-size:12px;margin-top:4px;font-weight:500;">{salary}</div>' if salary and salary != "nan" else ""
+    salary_html = (
+        f'<div style="color:{EMERALD_500};font-size:12px;margin-top:4px;font-weight:500;">{salary}</div>'
+        if salary and salary != "nan"
+        else ""
+    )
 
     work_type = _esc(row.get("work_type", ""))
     work_arr = _esc(row.get("work_arrangement", ""))
     meta_parts = [m for m in [work_type, work_arr] if m and m != "nan"]
-    meta_html = f'<span style="color:{L_TEXT_FAINT};font-size:11px;">{" · ".join(meta_parts)}</span>' if meta_parts else ""
+    meta_html = (
+        f'<span style="color:{L_TEXT_FAINT};font-size:11px;">{" · ".join(meta_parts)}</span>' if meta_parts else ""
+    )
 
     return f"""<tr><td class="job-card" style="padding:16px 20px;border-bottom:1px solid {L_BORDER};">
   <table role="presentation" style="width:100%;"><tr>
@@ -193,10 +200,10 @@ def _render_job_card(row: pd.Series) -> str:
       </div>
       <div class="job-meta" style="margin-top:4px;color:{L_TEXT_MUTED};font-size:12px;">
         {location}
-        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' if location else ''}
+        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' if location else ""}
         {via_html}
-        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' + date_html if date_html else ''}
-        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' + meta_html if meta_html else ''}
+        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' + date_html if date_html else ""}
+        {f'<span style="margin:0 6px;color:{L_TEXT_FAINT};">·</span>' + meta_html if meta_html else ""}
       </div>
       {salary_html}
       <div style="margin-top:6px;">
@@ -401,7 +408,7 @@ def render_email_html(df: pd.DataFrame, min_score: float = 20.0) -> str:
     <td style="text-align:center;">
       <p class="footer-text" style="margin:0;font-size:12px;color:{L_TEXT_MUTED};font-style:italic;">Job Hunter</p>
       <p class="footer-sub" style="margin:6px 0 0;font-size:11px;color:{L_TEXT_FAINT};">Score threshold: {min_score:.0f} · {len(top_jobs)} of {total} jobs · {ts}</p>
-      <p class="footer-sub" style="margin:8px 0 0;font-size:11px;color:{L_TEXT_FAINT};">Open source · github.com/elvistran/job-hunter</p>
+      <p class="footer-sub" style="margin:8px 0 0;font-size:11px;color:{L_TEXT_FAINT};">Open source · github.com/elvistranhere/job-hunter</p>
     </td>
   </tr></table>
 </td></tr>""")
@@ -411,6 +418,7 @@ def render_email_html(df: pd.DataFrame, min_score: float = 20.0) -> str:
 
 
 # ── SMTP sending ─────────────────────────────────────────────────────────────
+
 
 def send_email(subject: str, html_body: str, to: str | None = None) -> bool:
     """Send HTML email via Gmail SMTP. Supports comma-separated recipients. Returns True on success."""
@@ -446,6 +454,7 @@ def send_email(subject: str, html_body: str, to: str | None = None) -> bool:
 
 
 # ── CLI ──────────────────────────────────────────────────────────────────────
+
 
 def main():
     parser = argparse.ArgumentParser(description="Send Job Hunter email digest")
