@@ -43,7 +43,7 @@ Resume PDF                     GitHub Actions (your fork)
 
 ### Option A: Web App (recommended)
 
-The web app parses your resume with AI and lets you customize scoring — then sets up GitHub Actions automatically.
+The web app parses your resume with AI and lets you customize scoring weights.
 
 ```bash
 cd web
@@ -55,7 +55,7 @@ npm run dev                  # Opens on localhost:3006
 1. Upload your resume PDF
 2. Review and customize skill tiers, scoring weights, locations, and roles
 3. Download `profile.json`
-4. Click "Set Up Automation" to fork, configure secrets, and enable daily cron — all from the browser
+4. Follow the "Set Up Automation" guide to fork, add secrets, and enable daily cron
 
 ### Option B: CLI Only
 
