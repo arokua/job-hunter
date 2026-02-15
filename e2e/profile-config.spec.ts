@@ -365,7 +365,7 @@ test.describe("Navigation preserves state within steps", () => {
 
     // The deploy button requires profileJson to be non-empty
     // In the non-OAuth path, we just verify the instructions mention profile.json
-    await expect(page.locator("text=profile.json")).toBeVisible();
+    await expect(page.locator("text=profile.json").first()).toBeVisible();
   });
 });
 
