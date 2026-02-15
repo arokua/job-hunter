@@ -271,8 +271,8 @@ export default function Home() {
 
     return {
       skills: skills.map((skill) => ({ name: skill.name, tier: skill.tier })),
-      titles: profile.titles,
-      keywords: profile.keywords,
+      titles: selectedRoles,
+      keywords: [...new Set(skills.map((s) => s.name.toLowerCase()))],
       locations: selectedLocations,
       roles: selectedRoles,
       weights,
@@ -782,18 +782,18 @@ export default function Home() {
           <section className="mb-10">
             <h2 className="font-serif text-xl text-white mb-4">Profile Summary</h2>
             <div className="rounded-xl border border-navy-700 bg-navy-800/40 p-6">
-              {profile.titles.length > 0 && (
+              {selectedRoles.length > 0 && (
                 <div className="mb-5">
                   <p className="font-sans text-xs font-medium text-navy-400 mb-2 tracking-wide uppercase">
-                    Job Titles
+                    Target Roles
                   </p>
                   <div className="flex flex-wrap gap-2">
-                    {profile.titles.map((title) => (
+                    {selectedRoles.map((role) => (
                       <span
-                        key={title}
+                        key={role}
                         className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm font-sans"
                       >
-                        {title}
+                        {role}
                       </span>
                     ))}
                   </div>

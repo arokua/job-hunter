@@ -10,9 +10,9 @@ Automated job discovery for Australia. Upload your resume, AI parses your skills
 
 ## Screenshots
 
-| Upload & Parse | Profile Editor |
+| Landing Page | Profile Editor |
 |:-:|:-:|
-| ![Homepage](https://raw.githubusercontent.com/elvistranhere/job-hunter-assets/main/01-homepage.png) | ![Profile Editor](https://raw.githubusercontent.com/elvistranhere/job-hunter-assets/main/02-profile-editor.png) |
+| ![Landing Page](https://raw.githubusercontent.com/elvistranhere/job-hunter-assets/main/01-landing.png) | ![Profile Editor](https://raw.githubusercontent.com/elvistranhere/job-hunter-assets/main/02-profile-editor.png) |
 
 | Scoring Weights | Export JSON |
 |:-:|:-:|
