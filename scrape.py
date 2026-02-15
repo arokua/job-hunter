@@ -17,6 +17,7 @@ import csv
 import json
 import logging
 import re
+import sys
 import unicodedata
 from datetime import datetime
 from pathlib import Path
@@ -991,18 +992,20 @@ def main():
 
     if jobs.empty:
         print("\nNo jobs found.")
-        return
+        sys.exit(1)
 
-    # 3b. Filter to AU target cities only
+    # 3b. Filter to profile target cities only
     if "location" in jobs.columns:
-        target_cities = {"adelaide", "sydney", "melbourne", "remote", "australia"}
+        profile_locations = {loc.split(",")[0].strip().lower() for loc in profile_data["locations"]}
+        target_cities = profile_locations | {"remote", "australia"}
         loc_lower = jobs["location"].fillna("").str.lower()
         au_mask = loc_lower.apply(lambda loc_text: any(c in loc_text for c in target_cities))
         before = len(jobs)
         jobs = jobs[au_mask].reset_index(drop=True)
         filtered = before - len(jobs)
+        city_names = ", ".join(sorted(profile_locations)) or "any"
         if filtered:
-            print(f"  Filtered out {filtered} non-target-city jobs (keeping Adelaide/Sydney/Melbourne/Remote)")
+            print(f"  Filtered out {filtered} non-target-city jobs (keeping {city_names}/Remote)")
 
     # 4. Score and rank
     print(f"\n[3/3] Scoring {len(jobs)} jobs against your profile...")

@@ -12,6 +12,7 @@ import argparse
 import html
 import os
 import smtplib
+import sys
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -499,7 +500,8 @@ def main():
     if not above_threshold:
         subject = f"Job Hunter: No strong matches today ({today})"
 
-    send_email(subject, email_html, to=args.to)
+    if not send_email(subject, email_html, to=args.to):
+        sys.exit(1)
 
 
 if __name__ == "__main__":

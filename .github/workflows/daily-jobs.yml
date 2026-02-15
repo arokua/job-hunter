@@ -16,9 +16,9 @@ on:
         default: '24'
         type: string
       min_score:
-        description: 'Minimum score for email digest'
+        description: 'Minimum score for email digest (blank = use profile.json minScore)'
         required: false
-        default: '20'
+        default: ''
         type: string
 
 concurrency:
@@ -50,11 +50,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y xvfb
 
-      - name: Ensure profile.json exists
+      - name: Verify profile.json exists
         run: |
           if [ ! -f profile.json ]; then
-            echo "profile.json not found. Copying profile.example.json -> profile.json"
-            cp profile.example.json profile.json
+            echo "::error::profile.json not found. Commit your profile.json to the repo root (see README)."
+            exit 1
           fi
 
       - name: Run scraper (focused)
@@ -90,6 +90,7 @@ jobs:
 
       - name: Upload jobs artifact
         uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
         with:
           name: jobs
           path: jobs/

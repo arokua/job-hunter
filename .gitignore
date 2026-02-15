@@ -33,6 +33,12 @@ cover-letters/
 # Planning docs (local only)
 .planning/
 
+# OS files
+.DS_Store
+
+# Root node_modules (Playwright E2E)
+node_modules/
+
 # Web app
 web/node_modules/
 web/.next/
@@ -40,8 +46,10 @@ web/.env
 web/.env*.local
 web/generated/
 
-# Playwright MCP
+# Playwright
 .playwright-mcp/
+test-results/
+playwright-report/
 
 # Screenshots (dev only)
 *.png
