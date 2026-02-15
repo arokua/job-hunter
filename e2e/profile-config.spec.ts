@@ -29,10 +29,12 @@ async function getProfileJson(page: Page): Promise<Record<string, unknown>> {
 /** Add a skill via the input + tier select + Add button. */
 async function addSkill(page: Page, name: string, tier: "core" | "strong" | "peripheral") {
   const skillInput = page.locator('input[placeholder*="Add a skill"]');
-  const tierSelect = page.locator("select.rounded-xl.border-navy-600");
+  // Scope tier select to the skill section (next to skill input, not the search settings selects)
+  const skillSection = skillInput.locator("..");
+  const tierSelect = skillSection.locator("select");
   await tierSelect.selectOption(tier);
   await skillInput.fill(name);
-  await page.click("button:has-text('Add')");
+  await skillSection.locator("button:has-text('Add')").click();
   // Wait for the JSON to update
   await page.waitForTimeout(100);
 }
@@ -318,7 +320,7 @@ test.describe("Navigation preserves state within steps", () => {
     // Navigate to Step 3
     await page.click("button:has-text('Set Up Daily Automation')");
     await expect(
-      page.locator("text=Daily Automation Setup").or(page.locator("text=Fork the repository")),
+      page.locator("h1", { hasText: "Daily Automation Setup" }),
     ).toBeVisible();
 
     // Navigate back — the "Back to Export" button goes to step 3 itself,
@@ -358,12 +360,118 @@ test.describe("Navigation preserves state within steps", () => {
 
     // Step 3 should be visible (automation setup)
     await expect(
-      page.locator("text=Daily Automation Setup").or(page.locator("text=Fork the repository")),
+      page.locator("h1", { hasText: "Daily Automation Setup" }),
     ).toBeVisible();
 
     // The deploy button requires profileJson to be non-empty
     // In the non-OAuth path, we just verify the instructions mention profile.json
     await expect(page.locator("text=profile.json")).toBeVisible();
+  });
+});
+
+// ─── Search Settings (maxHours, resultsPerSearch, excludeSeniority) ──────────
+
+test.describe("Search Settings update JSON correctly", () => {
+  test("default search settings in JSON", async ({ page }) => {
+    await skipToStep2(page);
+
+    const profile = await getProfileJson(page);
+    expect(profile.maxHours).toBe(24);
+    expect(profile.resultsPerSearch).toBe(20);
+    // Default excludeSeniority: senior, lead, staff, director, executive
+    const exclude = profile.excludeSeniority as string[];
+    expect(exclude).toContain("senior");
+    expect(exclude).toContain("lead");
+    expect(exclude).toContain("staff");
+    expect(exclude).toContain("director");
+    expect(exclude).toContain("executive");
+    expect(exclude).not.toContain("intern");
+    expect(exclude).not.toContain("junior");
+    expect(exclude).not.toContain("mid");
+  });
+
+  test("change maxHours → JSON reflects new value", async ({ page }) => {
+    await skipToStep2(page);
+
+    const maxHoursSelect = page.locator("select").filter({ has: page.locator("option:has-text('24 hours')") });
+    await maxHoursSelect.selectOption("72");
+
+    const profile = await getProfileJson(page);
+    expect(profile.maxHours).toBe(72);
+  });
+
+  test("change resultsPerSearch → JSON reflects new value", async ({ page }) => {
+    await skipToStep2(page);
+
+    const resultsSelect = page.locator("select").filter({ has: page.locator("option:has-text('10 (fast)')") });
+    await resultsSelect.selectOption("50");
+
+    const profile = await getProfileJson(page);
+    expect(profile.resultsPerSearch).toBe(50);
+  });
+
+  test("toggle seniority level off → removed from excludeSeniority", async ({ page }) => {
+    await skipToStep2(page);
+
+    // Senior is excluded by default, click to include it
+    await page.locator("button.capitalize", { hasText: "senior" }).click();
+
+    const profile = await getProfileJson(page);
+    const exclude = profile.excludeSeniority as string[];
+    expect(exclude).not.toContain("senior");
+    // Others still excluded
+    expect(exclude).toContain("lead");
+    expect(exclude).toContain("staff");
+  });
+
+  test("toggle seniority level on → added to excludeSeniority", async ({ page }) => {
+    await skipToStep2(page);
+
+    // Intern is NOT excluded by default, click to exclude it
+    await page.locator("button.capitalize", { hasText: "intern" }).click();
+
+    const profile = await getProfileJson(page);
+    const exclude = profile.excludeSeniority as string[];
+    expect(exclude).toContain("intern");
+  });
+
+  test("exclude all seniority levels → all 8 in JSON", async ({ page }) => {
+    await skipToStep2(page);
+
+    // Click the 3 levels not excluded by default: intern, junior, mid
+    await page.locator("button.capitalize", { hasText: "intern" }).click();
+    await page.locator("button.capitalize", { hasText: "junior" }).click();
+    await page.locator("button.capitalize", { hasText: "mid" }).click();
+
+    const profile = await getProfileJson(page);
+    const exclude = profile.excludeSeniority as string[];
+    expect(exclude).toHaveLength(8);
+  });
+
+  test("include all seniority levels → empty excludeSeniority", async ({ page }) => {
+    await skipToStep2(page);
+
+    // Click each excluded level to toggle off: senior, lead, staff, director, executive
+    await page.locator("button.capitalize", { hasText: "senior" }).click();
+    await page.locator("button.capitalize", { hasText: "lead" }).click();
+    await page.locator("button.capitalize", { hasText: "staff" }).click();
+    await page.locator("button.capitalize", { hasText: "director" }).click();
+    await page.locator("button.capitalize", { hasText: "executive" }).click();
+
+    const profile = await getProfileJson(page);
+    expect(profile.excludeSeniority).toEqual([]);
+  });
+
+  test("search settings included in schema validation", async ({ page }) => {
+    await skipToStep2(page);
+
+    const profile = await getProfileJson(page);
+    expect(profile).toHaveProperty("maxHours");
+    expect(profile).toHaveProperty("resultsPerSearch");
+    expect(profile).toHaveProperty("excludeSeniority");
+    expect(typeof profile.maxHours).toBe("number");
+    expect(typeof profile.resultsPerSearch).toBe("number");
+    expect(Array.isArray(profile.excludeSeniority)).toBe(true);
   });
 });
 
@@ -383,6 +491,9 @@ test.describe("Exported JSON always conforms to Python scraper schema", () => {
     expect(profile).toHaveProperty("roles");
     expect(profile).toHaveProperty("weights");
     expect(profile).toHaveProperty("minScore");
+    expect(profile).toHaveProperty("maxHours");
+    expect(profile).toHaveProperty("resultsPerSearch");
+    expect(profile).toHaveProperty("excludeSeniority");
 
     // Types are correct
     expect(Array.isArray(profile.skills)).toBe(true);
@@ -392,6 +503,9 @@ test.describe("Exported JSON always conforms to Python scraper schema", () => {
     expect(Array.isArray(profile.roles)).toBe(true);
     expect(typeof profile.weights).toBe("object");
     expect(typeof profile.minScore).toBe("number");
+    expect(typeof profile.maxHours).toBe("number");
+    expect(typeof profile.resultsPerSearch).toBe("number");
+    expect(Array.isArray(profile.excludeSeniority)).toBe(true);
 
     // Weight keys match what Python expects
     const weightKeys = Object.keys(profile.weights as object).sort();
