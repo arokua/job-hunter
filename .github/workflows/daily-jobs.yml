@@ -1,8 +1,8 @@
 name: Daily Jobs
 
 on:
-  # schedule:
-  #   - cron: '0 21 * * *'  # Uncomment after setup (9pm UTC = 7am AEST)
+  schedule:
+    - cron: '0 21 * * *'
   workflow_dispatch:
     inputs:
       full_run:
