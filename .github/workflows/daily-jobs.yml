@@ -2,13 +2,13 @@ name: Daily Jobs
 
 on:
   schedule:
-    - cron: '0 21 * * *'
+    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       full_run:
         description: 'Run full search matrix (all locations x all roles)'
         required: false
-        default: 'false'
+        default: false
         type: boolean
       hours:
         description: 'Override max hours since posted (blank = use profile.json)'
