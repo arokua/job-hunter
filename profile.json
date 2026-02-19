@@ -1,6 +1,5 @@
 {
   "skills": [
-<<<<<<< HEAD
     { "name": "Python", "tier": "core" },
     { "name": "REST APIs", "tier": "core" },
     { "name": "WordPress", "tier": "core" },
@@ -54,6 +53,7 @@
   ],
 
   "locations": [
+    "Perth",
     "Sydney",
     "Melbourne",
     "Adelaide",
@@ -72,7 +72,7 @@
     "titleMatch": 1.2,
     "location": 1.0,
     "companyTier": 0.9,
-    "sponsorship": 1.1,
+    "sponsorship": 0,
     "recency": 1.0,
     "culture": 0.8,
     "quality": 1.0
@@ -82,173 +82,12 @@
   "maxHours": 24,
   "resultsPerSearch": 20,
 
-=======
-    {
-      "name": "Python",
-      "tier": "core"
-    },
-    {
-      "name": "SQL",
-      "tier": "core"
-    },
-    {
-      "name": "React",
-      "tier": "core"
-    },
-    {
-      "name": "Next.js",
-      "tier": "strong"
-    },
-    {
-      "name": "Pandas",
-      "tier": "strong"
-    },
-    {
-      "name": "Flutter",
-      "tier": "strong"
-    },
-    {
-      "name": "Firebase",
-      "tier": "strong"
-    },
-    {
-      "name": "JavaScript",
-      "tier": "strong"
-    },
-    {
-      "name": "Dart",
-      "tier": "strong"
-    },
-    {
-      "name": "NumPy",
-      "tier": "strong"
-    },
-    {
-      "name": "Git",
-      "tier": "strong"
-    },
-    {
-      "name": "Docker",
-      "tier": "strong"
-    },
-    {
-      "name": "AWS",
-      "tier": "strong"
-    },
-    {
-      "name": "Google Cloud",
-      "tier": "strong"
-    },
-    {
-      "name": "REST APIs",
-      "tier": "strong"
-    },
-    {
-      "name": "GraphQL",
-      "tier": "peripheral"
-    },
-    {
-      "name": "scikit-learn",
-      "tier": "peripheral"
-    },
-    {
-      "name": "Neo4j",
-      "tier": "peripheral"
-    },
-    {
-      "name": "R",
-      "tier": "peripheral"
-    },
-    {
-      "name": "PHP",
-      "tier": "peripheral"
-    },
-    {
-      "name": "HTML",
-      "tier": "strong"
-    },
-    {
-      "name": "CSS",
-      "tier": "strong"
-    },
-    {
-      "name": "TypeScript",
-      "tier": "peripheral"
-    },
-    {
-      "name": "N8N automation",
-      "tier": "strong"
-    }
-  ],
-  "titles": [
-    "Data Engineer",
-    "Junior Data Scientist",
-    "Full Stack Developer",
-    "Software Engineer"
-  ],
-  "keywords": [
-    "python",
-    "sql",
-    "react",
-    "next.js",
-    "pandas",
-    "flutter",
-    "firebase",
-    "javascript",
-    "dart",
-    "numpy",
-    "git",
-    "docker",
-    "aws",
-    "google cloud",
-    "rest apis",
-    "graphql",
-    "scikit-learn",
-    "neo4j",
-    "r",
-    "php",
-    "html",
-    "css",
-    "typescript",
-    "n8n automation"
-  ],
-  "locations": [
-    "Sydney",
-    "Melbourne",
-    "Remote"
-  ],
-  "roles": [
-    "Data Engineer",
-    "Junior Data Scientist",
-    "Full Stack Developer",
-    "Software Engineer"
-  ],
-  "weights": {
-    "companyTier": 1,
-    "location": 1.1,
-    "titleMatch": 1,
-    "skills": 1,
-    "sponsorship": 0.3,
-    "recency": 1,
-    "culture": 1,
-    "quality": 1
-  },
-  "minScore": 20,
-  "maxHours": 24,
-  "resultsPerSearch": 20,
->>>>>>> 5d001bc23be10dc99ca050134683ad48eda137b1
   "excludeSeniority": [
     "senior",
     "lead",
     "staff",
     "director",
-<<<<<<< HEAD
     "principal",
     "executive"
   ]
 }
-=======
-    "executive"
-  ]
-}
->>>>>>> 5d001bc23be10dc99ca050134683ad48eda137b1
