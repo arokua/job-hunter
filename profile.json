@@ -1,0 +1,92 @@
+{
+  "skills": [
+    { "name": "Python", "tier": "core" },
+    { "name": "REST APIs", "tier": "core" },
+    { "name": "WordPress", "tier": "core" },
+
+    { "name": "Pandas", "tier": "strong" },
+    { "name": "PHP", "tier": "strong" },
+    { "name": "WooCommerce", "tier": "strong" },
+    { "name": "JavaScript", "tier": "strong" },
+    { "name": "Next.js", "tier": "strong" },
+    { "name": "n8n", "tier": "strong" },
+    { "name": "Git", "tier": "strong" },
+
+    { "name": "SQL", "tier": "peripheral" },
+    { "name": "Docker", "tier": "peripheral" },
+    { "name": "AWS", "tier": "peripheral" },
+    { "name": "Google Cloud", "tier": "peripheral" },
+    { "name": "Flutter", "tier": "peripheral" },
+    { "name": "Firebase", "tier": "peripheral" },
+    { "name": "Neo4j", "tier": "peripheral" },
+    { "name": "GraphQL", "tier": "peripheral" },
+    { "name": "NumPy", "tier": "peripheral" },
+    { "name": "scikit-learn", "tier": "peripheral" },
+    { "name": "R", "tier": "peripheral" },
+    { "name": "Tkinter", "tier": "peripheral" },
+    { "name": "HTML", "tier": "peripheral" },
+    { "name": "CSS", "tier": "peripheral" }
+  ],
+
+  "titles": [
+    "Automation Engineer",
+    "Backend Engineer",
+    "Software Engineer"
+  ],
+
+  "keywords": [
+    "python",
+    "automation",
+    "api integration",
+    "backend development",
+    "wordpress engineering",
+    "woocommerce",
+    "pandas",
+    "rest apis",
+    "php",
+    "workflow automation",
+    "n8n",
+    "system integration",
+    "data processing",
+    "next.js",
+    "javascript"
+  ],
+
+  "locations": [
+    "Sydney",
+    "Melbourne",
+    "Adelaide",
+    "Remote"
+  ],
+
+  "roles": [
+    "Automation Engineer",
+    "Backend Engineer (Junior)",
+    "Software Engineer",
+    "Platform Support Engineer"
+  ],
+
+  "weights": {
+    "skills": 1.5,
+    "titleMatch": 1.2,
+    "location": 1.0,
+    "companyTier": 0.9,
+    "sponsorship": 1.1,
+    "recency": 1.0,
+    "culture": 0.8,
+    "quality": 1.0
+  },
+
+  "minScore": 22,
+  "maxHours": 24,
+  "resultsPerSearch": 20,
+
+  "excludeSeniority": [
+    "senior",
+    "lead",
+    "staff",
+    "director",
+    "principal",
+    "executive"
+  ]
+}
