@@ -492,8 +492,8 @@ def main():
         jobs_dir = Path("jobs")
         csv_files = sorted(jobs_dir.glob("ranked-jobs_*.csv")) if jobs_dir.exists() else []
         if not csv_files:
-            print("No CSV files found in jobs/. Run scrape.py first.")
-            return
+            print("::error::No ranked jobs CSV found. Scraper produced no digest input.")
+            sys.exit(1)
         csv_path = csv_files[-1]
 
     print(f"  Reading {csv_path}...")
